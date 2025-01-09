@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Night</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-image: url('https://i.pinimg.com/originals/8e/46/15/8e46150f790fbefe438d9c2767c32ad1.gif');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 2rem;
+            transform: translateY(-5%);
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Register the Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('service-worker.js')
+                .then(registration => {
+                    console.log("Service Worker registered:", registration);
+
+                    // Request notification permission
+                    if (Notification.permission !== "granted") {
+                        Notification.requestPermission().then(permission => {
+                            if (permission === "granted") {
+                                console.log("Notifications enabled!");
+                            } else {
+                                alert("Please enable notifications to receive updates.");
+                            }
+                        });
+                    }
+
+                    // Register periodic sync (if supported)
+                    if ('periodicSync' in registration) {
+                        registration.periodicSync.register('night-notifications', {
+                            minInterval: 5 * 1000 // Minimum interval in milliseconds (5 seconds)
+                        }).then(() => {
+                            console.log("Periodic background sync registered.");
+                        }).catch(error => {
+                            console.error("Periodic Sync failed:", error);
+                        });
+                    } else {
+                        console.log("Periodic Sync not supported in this browser.");
+                    }
+                })
+                .catch(error => console.error("Service Worker registration failed:", error));
+        } else {
+            alert("Service Workers are not supported in this browser.");
+        }
+    </script>
+    Night Notifications Enabled
+</body>
+</html>
